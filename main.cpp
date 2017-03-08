@@ -5,7 +5,7 @@
 #include <deque>
 #include <stack>
 
-#include <FreeImage.h>
+#include "Scene.h"
 using namespace std;
 
 #define WIDTH 800
@@ -21,18 +21,9 @@ int main(int argc, char* argv[]) {
   // }
 
   FreeImage_Initialise();
-  FIBITMAP * bitmap = FreeImage_Allocate(WIDTH, HEIGHT, BITS_PER_PIXEL);
-  RGBQUAD color;
 
-  for(int i = 0; i < WIDTH; i++) {
-    for(int j = 0; j< HEIGHT; j++) {
-      color.rgbRed = 0;
-      color.rgbGreen = (double)i / WIDTH * 255;
-      color.rgbBlue = (double)j / HEIGHT;
-      FreeImage_SetPixelColor(bitmap, i, j, &color);
-    }
-  }
+  Scene scene;
+  scene.render();
 
-  FreeImage_Save(FIF_PNG, bitmap, "test.png", 0);
   FreeImage_DeInitialise();
 }

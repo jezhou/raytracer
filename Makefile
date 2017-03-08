@@ -15,11 +15,20 @@ endif
 
 all: raytracer
 
-raytracer: main.o
-	$(CC) $(CFLAGS) -o raytracer main.o ${INCFLAGS} ${LDFLAGS}
+raytracer: main.o sampler.o scene.o film.o
+	$(CC) $(CFLAGS) -o raytracer scene.o sampler.o film.o main.o ${INCFLAGS} ${LDFLAGS}
 
-main.o: main.cpp
+main.o: main.cpp Scene.h Film.h Sampler.h Sample.h
 	$(CC) $(CFLAGS) $(INCFLAGS) -c main.cpp
+
+sampler.o: Sampler.cpp Sampler.h
+	$(CC) $(CFLAGS) $(INCFLAGS) -c Sampler.cpp
+
+scene.o: Scene.cpp Scene.h
+	$(CC) $(CFLAGS) $(INCFLAGS) -c Scene.cpp
+
+film.o: Film.cpp Film.h
+	$(CC) $(CFLAGS) $(INCFLAGS) -c Film.cpp
 
 clean:
 	rm *.o raytracer *.png
