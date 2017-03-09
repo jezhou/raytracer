@@ -1,3 +1,6 @@
+#ifndef SAMPLER_H
+#define SAMPLER_H
+
 #include "Film.h"
 
 class Sampler {
@@ -9,3 +12,5 @@ class Sampler {
     Sampler(float x, float y);
     bool getSample(Sample * sample);
 };
+
+#endif

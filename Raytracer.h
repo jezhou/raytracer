@@ -1,3 +1,6 @@
+#ifndef RAYTRACER_H
+#define RAYTRACER_H
+
 #include "Camera.h"
 #include <FreeImage.h>
 
@@ -10,3 +13,5 @@ class Raytracer {
   public:
     void trace(Ray& ray, int depth, RGBQUAD * color);
 };
+
+#endif

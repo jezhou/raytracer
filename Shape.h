@@ -1,3 +1,6 @@
+#ifndef SHAPE_H
+#define SHAPE_H
+
 #include "LocalGeo.h"
 
 class Shape {
@@ -17,3 +20,5 @@ class Triangle : public Shape {
     Point v1, v2, v3;
 
 };
+
+#endif

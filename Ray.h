@@ -1,3 +1,6 @@
+#ifndef RAY_H
+#define RAY_H
+
 #include "Point.h"
 
 #include <glm/glm.hpp>
@@ -9,3 +12,5 @@ class Ray {
     glm::vec3 dir;
     float t_min, t_max;
 };
+
+#endif

@@ -29,12 +29,10 @@ void Raytracer::trace(Ray& ray, int depth, RGBQUAD * color) {
     color->rgbRed = 0;
     color->rgbGreen = 255;
     color->rgbBlue = 0;
-    std::cout << "print yes";
   } else {
     color->rgbRed = 0;
     color->rgbGreen = 0;
     color->rgbBlue = 0;
-    std::cout << "print no";
   }
 
 }
