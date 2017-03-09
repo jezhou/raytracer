@@ -1,4 +1,4 @@
-#include "Sample.h"
+#include "Camera.h"
 #include <FreeImage.h>
 
 class Film {
