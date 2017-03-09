@@ -3,8 +3,8 @@
 Film::Film() {
 
   // TODO: Change bc hardcoded
-  float WIDTH = 100;
-  float HEIGHT = 100;
+  float WIDTH = 800;
+  float HEIGHT = 600;
   float BITS_PER_PIXEL = 24;
 
 

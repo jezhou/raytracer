@@ -12,6 +12,8 @@ using namespace std;
 #define HEIGHT 600
 #define BITS_PER_PIXEL 24 // 3 8-bit rgb values = 24
 
+Scene * scene;
+
 int main(int argc, char* argv[]) {
 
   // TODO: Uncomment this out later
@@ -21,9 +23,8 @@ int main(int argc, char* argv[]) {
   // }
 
   FreeImage_Initialise();
-
-  Scene scene;
-  scene.render();
+  scene = new Scene();
+  scene->render();
 
   FreeImage_DeInitialise();
 }

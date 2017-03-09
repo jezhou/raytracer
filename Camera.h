@@ -1,6 +1,6 @@
 #include <glm/glm.hpp>
 #include "Sample.h"
-#include "Ray.h"
+#include "Shape.h"
 
 class Camera {
 

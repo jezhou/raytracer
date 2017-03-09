@@ -1,4 +1,4 @@
-#include "Camera.h"
+#include "Raytracer.h"
 #include <FreeImage.h>
 
 class Film {

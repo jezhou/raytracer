@@ -7,5 +7,5 @@ class Ray {
   public:
     Point pos;
     glm::vec3 dir;
-    //float t_min, t_max;
+    float t_min, t_max;
 };
