@@ -1,13 +1,9 @@
 #include "Film.h"
+#include "variables.h"
 
 Film::Film() {
 
-  // TODO: Change bc hardcoded
-  float WIDTH = 800;
-  float HEIGHT = 600;
-  float BITS_PER_PIXEL = 24;
-
-  bitmap = FreeImage_Allocate(WIDTH, HEIGHT, BITS_PER_PIXEL);
+  bitmap = FreeImage_Allocate(width, height, bits_per_pixel);
 }
 
 void Film::commit(Sample& sample, RGBQUAD& color) {

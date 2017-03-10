@@ -12,8 +12,8 @@ using namespace std;
 #include "variables.h"
 
 void init() {
-  width = 800;
-  height = 600;
+  width = 640;
+  height = 480;
   bits_per_pixel = 24;
 }
 

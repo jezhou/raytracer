@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "variables.h"
 
 Scene::Scene() {
   shapes = new std::vector<Shape *>();
@@ -14,15 +15,15 @@ std::vector<Shape *> * Scene::getShapes() {
 
 void Scene::render() {
 
-  Sampler sampler(800, 600);
+  Sampler sampler(width, height);
   Sample sample;
   RGBQUAD color;
   Film film;
   Ray ray;
   Raytracer raytracer;
 
-  Camera camera(glm::vec3(-4, -4, 4),
-                glm::vec3(1, 0, 0),
+  Camera camera(glm::vec3(0,0, 4),
+                glm::vec3(0, 0, 0),
                 glm::vec3(0, 1, 0),
                 30.0);
 

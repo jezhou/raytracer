@@ -1,6 +1,6 @@
 #include "Sampler.h"
 
-Sampler::Sampler(float x, float y) : height(x), width(y), cur_x(0), cur_y(0) {};
+Sampler::Sampler(float x, float y) : width(x), height(y), cur_x(0), cur_y(0) {};
 
 bool Sampler::getSample(Sample * sample) {
 
