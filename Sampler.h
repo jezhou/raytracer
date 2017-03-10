@@ -1,7 +1,12 @@
 #ifndef SAMPLER_H
 #define SAMPLER_H
 
-#include "Film.h"
+struct Sample {
+  float x, y;
+  float midx;
+  float midy;
+};
+
 
 class Sampler {
 

@@ -1,8 +1,9 @@
 #ifndef FILM_H
 #define FILM_H
 
-#include "Raytracer.h"
 #include <FreeImage.h>
+
+#include "Sampler.h"
 
 class Film {
   FIBITMAP * bitmap;

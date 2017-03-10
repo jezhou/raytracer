@@ -7,7 +7,6 @@ Film::Film() {
   float HEIGHT = 600;
   float BITS_PER_PIXEL = 24;
 
-
   bitmap = FreeImage_Allocate(WIDTH, HEIGHT, BITS_PER_PIXEL);
 }
 

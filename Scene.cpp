@@ -21,14 +21,6 @@ void Scene::render() {
   Ray ray;
   Raytracer raytracer;
 
-  //TODO: Remove after milestone
-  Point v0(-1, -1, 0);
-  Point v1(1, -1, 0);
-  Point v2(1, 1, 0);
-  Point v3(-1, 1, 0);
-  Triangle triangle(v0, v1, v2);
-  addShape(&triangle);
-
   Camera camera(glm::vec3(-4, -4, 4),
                 glm::vec3(1, 0, 0),
                 glm::vec3(0, 1, 0),

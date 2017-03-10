@@ -8,11 +8,14 @@
 #include "Scene.h"
 using namespace std;
 
-#define WIDTH 800
-#define HEIGHT 600
-#define BITS_PER_PIXEL 24 // 3 8-bit rgb values = 24
+#define MAINPROGRAM
+#include "variables.h"
 
-Scene * scene;
+void init() {
+  width = 800;
+  height = 600;
+  bits_per_pixel = 24;
+}
 
 int main(int argc, char* argv[]) {
 
@@ -23,8 +26,8 @@ int main(int argc, char* argv[]) {
   // }
 
   FreeImage_Initialise();
-  scene = new Scene();
-  scene->render();
-
+  init();
+  scene = Scene();
+  scene.render();
   FreeImage_DeInitialise();
 }

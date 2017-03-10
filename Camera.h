@@ -2,7 +2,7 @@
 #define CAMERA_H
 
 #include <glm/glm.hpp>
-#include "Sample.h"
+#include "Sampler.h"
 #include "Shape.h"
 
 class Camera {

@@ -15,10 +15,10 @@ endif
 
 all: raytracer
 
-raytracer: point.o camera.o main.o sampler.o shape.o raytracer.o scene.o film.o camera.o
-	$(CC) $(CFLAGS) -o raytracer point.o camera.o shape.o raytracer.o scene.o sampler.o film.o main.o ${INCFLAGS} ${LDFLAGS}
+raytracer: camera.o main.o sampler.o shape.o raytracer.o scene.o film.o camera.o
+	$(CC) $(CFLAGS) -o raytracer camera.o shape.o raytracer.o scene.o sampler.o film.o main.o ${INCFLAGS} ${LDFLAGS}
 
-main.o: main.cpp Scene.h Film.h Sampler.h Sample.h LocalGeo.h Ray.h Shape.h
+main.o: main.cpp Scene.h Film.h Sampler.h LocalGeo.h Ray.h Shape.h
 	$(CC) $(CFLAGS) $(INCFLAGS) -c main.cpp
 
 sampler.o: Sampler.cpp Sampler.h
@@ -29,9 +29,6 @@ scene.o: Scene.cpp Scene.h
 
 film.o: Film.cpp Film.h
 	$(CC) $(CFLAGS) $(INCFLAGS) -c Film.cpp
-
-point.o: Point.cpp Point.h
-	$(CC) $(CFLAGS) $(INCFLAGS) -c Point.cpp
 
 camera.o: Camera.cpp Camera.h
 	$(CC) $(CFLAGS) $(INCFLAGS) -c Camera.cpp

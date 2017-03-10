@@ -1,12 +1,11 @@
 #ifndef RAYTRACER_H
 #define RAYTRACER_H
 
-#include "Camera.h"
 #include <FreeImage.h>
+#include "Ray.h"
+#include "Shape.h"
 
 class Scene;
-
-extern Scene * scene;
 
 class Raytracer {
 

@@ -2,18 +2,16 @@
 #include <vector>
 #include <iostream>
 
-typedef std::vector<Shape *>::iterator shape_iter;
-
 void Raytracer::trace(Ray& ray, int depth, RGBQUAD * color) {
 
   float thit;
   LocalGeo in;
 
   //TODO: Remove after milestone
-  Point v0(-1, -1, 0);
-  Point v1(1, -1, 0);
-  Point v2(1, 1, 0);
-  Point v3(-1, 1, 0);
+  glm::vec3 v0 = glm::vec3(-1, -1, 0);
+  glm::vec3 v1 = glm::vec3(1, -1, 0);
+  glm::vec3 v2 = glm::vec3(1, 1, 0);
+  glm::vec3 v3 = glm::vec3(-1, 1, 0);
   Triangle triangle(v0, v1, v2);
 
   if (depth > 5) {

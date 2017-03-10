@@ -2,6 +2,7 @@
 #define SHAPE_H
 
 #include "LocalGeo.h"
+#include <glm/glm.hpp>
 
 class Shape {
 
@@ -13,11 +14,11 @@ class Shape {
 class Triangle : public Shape {
 
   public:
-    Triangle(Point vertex1, Point vertex2, Point vertex3);
+    Triangle(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3);
     bool intersect(Ray& ray, float* thit, LocalGeo* local);
 
   protected:
-    Point v1, v2, v3;
+    glm::vec3 v1, v2, v3;
 
 };
 

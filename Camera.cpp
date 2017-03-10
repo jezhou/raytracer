@@ -1,8 +1,5 @@
 #include "Camera.h"
-
-#define WIDTH 800
-#define HEIGHT 600
-
+#include "variables.h"
 
 Camera::Camera(glm::vec3 e, glm::vec3 c, glm::vec3 up, float f) {
 
@@ -26,13 +23,12 @@ Camera::Camera(glm::vec3 e, glm::vec3 c, glm::vec3 up, float f) {
 
 void Camera::generateRay(Sample& sample, Ray * ray) {
 
-  // TODO: Set width / height global variables
-  float alpha = glm::tan(fov/2) * ((sample.x - (WIDTH / 2)) / (WIDTH /2));
-  float beta = glm::tan(fov/2) * (((HEIGHT/2) - sample.y) / (HEIGHT/2));
+  float alpha = glm::tan(fov/2) * ((sample.x - (width / 2)) / (width /2));
+  float beta = glm::tan(fov/2) * (((height/2) - sample.y) / (height/2));
 
   glm::vec3 ab_vec = glm::normalize(alpha * u + beta * v - w);
 
   ray->dir = eye - ab_vec;
-  ray->pos = Point(sample.x, sample.y, 0);
+  ray->pos = glm::vec3(sample.x, sample.y, 0);
 
 }
