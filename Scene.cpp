@@ -22,7 +22,7 @@ void Scene::render() {
   Ray ray;
   Raytracer raytracer;
 
-  Camera camera(glm::vec3(0,0, 4),
+  Camera camera(glm::vec3(0, 0, 4),
                 glm::vec3(0, 0, 0),
                 glm::vec3(0, 1, 0),
                 30.0);

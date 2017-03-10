@@ -18,13 +18,6 @@ void init() {
 }
 
 int main(int argc, char* argv[]) {
-
-  // TODO: Uncomment this out later
-  // if (argc < 2) {
-  //   cerr << "Usage: raytracer <scenefile>\n";
-  //   exit(-1);
-  // }
-
   FreeImage_Initialise();
   init();
   scene = Scene();
