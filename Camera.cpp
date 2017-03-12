@@ -15,13 +15,16 @@ Camera::Camera(glm::vec3 e, glm::vec3 c, glm::vec3 up, float f) {
 
 void Camera::generateRay(Sample& sample, Ray * ray) {
 
-  float fovy_calc = glm::tan(fov/2);
-  float fovx_calc = fovy_calc * width/height;
+  // Need to convert fov to radians before you use glm trig functions
+  float fov_radians = fov * PI / 180;
+  float fovy_calc = glm::tan(fov_radians / 2);
+  float fovx_calc = fovy_calc * width / height; // multiply to make world aspect ratio 1:1
 
-  float alpha = fovy_calc * ((sample.x - (width / 2)) / (width /2));
-  float beta = fovx_calc * (((height/2) - sample.y) / (height/2));
+  // Generate ray direction increments
+  float alpha = fovx_calc * ((sample.midx - (width/2)) / (width /2));
+  float beta = fovy_calc * ((sample.midy - (height/2)) / (height/2));
 
-  ray->dir = glm::normalize(alpha * u + beta * v - w);;
+  ray->dir = glm::normalize((alpha * u) + (beta * v) - w);
   ray->pos = eye;
 
 }

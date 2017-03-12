@@ -5,6 +5,8 @@
 #include "Sampler.h"
 #include "Shape.h"
 
+#define PI 3.14159
+
 class Camera {
 
   float fov;
