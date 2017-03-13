@@ -129,7 +129,23 @@ void readfile(const char* filename)
             shapes.push_back(tri);
           }
 
-        } else {
+        } else if (cmd == "sphere") {
+          validinput = readvals(s, 4, values);
+          if(validinput) {
+            Shape * sphere = new Sphere(
+              vec3(
+                values[0],
+                values[1],
+                values[2]
+              ),
+              values[3]
+            );
+            shapes.push_back(sphere);
+          }
+
+        }
+
+        else {
           cerr << "Not processing ";
           cerr << cmd;
           cerr << "; skipping for now\n";

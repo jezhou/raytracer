@@ -1,6 +1,8 @@
 #include "Shape.h"
 #include <iostream>
 
+using namespace glm;
+
 Triangle::Triangle(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3) :
   v1(vertex1), v2(vertex2), v3(vertex3) {}
 
@@ -38,7 +40,7 @@ bool Triangle::intersect(Ray& ray, float * thit) {
     // If none of the below are true, the point is outside of the triangle and should return black pixel
     if (beta < 0 || beta > 1 || gamma < 0 || gamma > 1 || beta + gamma > 1) return false;
 
-    thit = &t;
+    (*thit) = t;
 
     return true;
 
@@ -46,5 +48,46 @@ bool Triangle::intersect(Ray& ray, float * thit) {
   }
 
   return false;
+
+}
+
+Sphere::Sphere(glm::vec3 c, float r) : center(c), radius(r) {}
+
+bool Sphere::intersect(Ray & ray, float * thit) {
+
+  glm::vec3 dir = ray.dir;
+  glm::vec3 eye = ray.pos;
+
+  float dis = pow(dot(dir, eye - center), 2) - dot(dir, dir) * (dot(eye-center, eye-center) - pow(radius, 2));
+
+  if(dis >= 0) {
+    float t1 = glm::dot(-dir, eye - center) + glm::sqrt(dis) / glm::dot(dir, dir);
+    float t2 = glm::dot(-dir, eye - center) - glm::sqrt(dis) / glm::dot(dir, dir);
+
+    // point grazes the edge of sphere, returning t1 or t2 is ok
+    if (t1 == t2) {
+      thit = &t1;
+      return true;
+    }
+
+    // If this point is reached, there are two intersection points. Pick the
+    // smaller t value, because it means it's the one that's closer to the camera.
+    // However, make sure the t value isn't negative
+
+    if (t1 < 0 && t2 < 0) return false;
+    else if(t1 < 0) thit = &t2;
+    else if(t2 < 0) thit = &t1;
+    else {
+      float closer = t1 < t2 ? t1 : t2;
+      (*thit) = closer;
+    }
+
+    return true;
+
+  }
+
+  // Discriminant is negative; roots are complex, no intersection at all
+  return false;
+
 
 }

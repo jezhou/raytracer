@@ -34,10 +34,14 @@ void Raytracer::trace(Ray& ray, int depth, RGBQUAD * color) {
 
   // TODO: return proper shading in the future
   //       right now this will just color in whatever green
-  if(hit_at_least_once) {
+  if(hit_at_least_once && dynamic_cast<Triangle*>(closestObject)) {
     color->rgbGreen = 255;
     color->rgbRed = 0;
     color->rgbBlue = 0;
+  } else if (hit_at_least_once) {
+    color->rgbGreen = 255;
+    color->rgbRed = 255;
+    color->rgbBlue = 255;
   } else {
     color->rgbGreen = 0;
     color->rgbRed = 0;

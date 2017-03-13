@@ -21,7 +21,13 @@ class Triangle : public Shape {
 };
 
 class Sphere : public Shape {
+  public:
+    Sphere(glm::vec3 c, float r);
+    virtual bool intersect(Ray& ray, float * thit);
 
+  protected:
+    glm::vec3 center;
+    float radius;
 };
 
 #endif
