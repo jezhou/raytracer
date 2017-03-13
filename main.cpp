@@ -6,20 +6,28 @@
 #include <stack>
 
 #include "Scene.h"
-using namespace std;
+#include "readfile.h"
 
 #define MAINPROGRAM
 #include "variables.h"
 
+using namespace std;
+using namespace glm;
+
 void init() {
-  width = 640;
-  height = 480;
   bits_per_pixel = 24;
 }
 
 int main(int argc, char* argv[]) {
+
+  if(argc != 2) {
+    cerr << "Usage: ./raytracer <scene_file>\n";
+    return 2;
+  }
+
   FreeImage_Initialise();
   init();
+  readfile(argv[1]);
   scene = Scene();
   scene.render();
   FreeImage_DeInitialise();

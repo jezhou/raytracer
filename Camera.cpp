@@ -2,6 +2,8 @@
 #include "variables.h"
 #include <iostream>
 
+Camera::Camera() : eye(0), fov(0), w(0), u(0), v(0) {};
+
 Camera::Camera(glm::vec3 e, glm::vec3 c, glm::vec3 up, float f) {
 
   eye = e;

@@ -6,8 +6,7 @@ Triangle::Triangle(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3) :
 
 // Basically, see if the ray intersects with the plane first.
 // If it does, check if it's between the triangle bounds.
-bool Triangle::intersect(Ray& ray) {
-
+bool Triangle::intersect(Ray& ray, float * thit) {
 
   // Calculate the plane normal
   glm::vec3 vector1, vector2, plane_normal_base;
@@ -38,6 +37,8 @@ bool Triangle::intersect(Ray& ray) {
 
     // If none of the below are true, the point is outside of the triangle and should return black pixel
     if (beta < 0 || beta > 1 || gamma < 0 || gamma > 1 || beta + gamma > 1) return false;
+
+    thit = &t;
 
     return true;
 

@@ -1,5 +1,9 @@
 #include "Film.h"
 #include "variables.h"
+#include <string>
+#include <iostream>
+
+using namespace std;
 
 Film::Film() {
 
@@ -14,6 +18,12 @@ void Film::commit(Sample& sample, RGBQUAD& color) {
 
 void Film::writeImage() {
 
-  FreeImage_Save(FIF_PNG, bitmap, "test1.png", 0);
+  char result[100];
+
+  std::strcpy(result, outputfilename);
+  std::strcat(result, ".png");
+
+  cout << "saving to " << result << endl;
+  FreeImage_Save(FIF_PNG, bitmap, result, 0);
 
 }

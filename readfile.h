@@ -1,0 +1,9 @@
+// Readfile definitions
+using namespace std;
+using namespace glm;
+
+
+void matransform (stack<mat4> &transfstack, float * values) ;
+void rightmultiply (const mat4 & M, stack<mat4> &transfstack) ;
+bool readvals (stringstream &s, const int numvals, float * values) ;
+void readfile (const char * filename) ;

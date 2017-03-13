@@ -19,13 +19,6 @@ void Scene::render() {
   Sample sample;
   RGBQUAD color;
   Film film;
-  Ray ray;
-  Raytracer raytracer;
-
-  Camera camera(glm::vec3(0, 0, 4),
-                glm::vec3(0, 0, 0),
-                glm::vec3(0, 1, 0),
-                30.0);
 
   while (sampler.getSample(&sample)) {
     camera.generateRay(sample, &ray);

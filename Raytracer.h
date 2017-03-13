@@ -4,6 +4,7 @@
 #include <FreeImage.h>
 #include "Ray.h"
 #include "Shape.h"
+#include "variables.h"
 
 class Scene;
 
