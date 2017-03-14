@@ -5,6 +5,46 @@ using namespace glm;
 
 Shape::Shape(bool transf) : hasTransform(false) {};
 
+void Shape::transform_ray(Ray * ray) {
+
+  // Instead of apply the transform to an object, apply the inverse transform to
+  // the ray and it will have the same effect
+
+  if(hasTransform) {
+    mat4 inverse_matrix = inverse(transform);
+    vec4 trans_ray_dir = inverse_matrix * vec4(ray->dir, 0.0);
+    vec4 trans_ray_pos = inverse_matrix * vec4(ray->pos, 1.0);
+    float w = trans_ray_pos.w;
+    ray->dir = glm::normalize(vec3(trans_ray_dir));
+    ray->pos = vec3(trans_ray_pos) / trans_ray_pos.w;
+  }
+}
+
+void Shape::restore_ray(Ray * ray_to_restore, Ray * orig_ray) {
+
+  // The transformed ray needs to be restored afterwards so the transformations
+  // don't propagate on the same ray with mulitple transformed objects in a
+  // scene
+
+  ray_to_restore->dir = orig_ray->dir;
+  ray_to_restore->pos = orig_ray->pos;
+}
+
+void Shape::local_to_world_t(float * thit, Ray * transf_ray, Ray * orig_ray, float transf_t) {
+
+  // Because transformations are done in local object coordinates, the value
+  // of thit is technically wrong. If a transform is done, whatever t is
+  // needs to be retransformed back by transforming p, then getting the
+  // distance between the original ray and p.
+
+  vec3 p = transf_ray->pos + transf_t * transf_ray->dir;
+  vec4 real_p = transform * vec4(p, 1.0);
+  float w = real_p.w;
+  vec3 dehomo_real_p = vec3(real_p.x / w, real_p.y / w, real_p.z / w);
+  (*thit) = glm::length(orig_ray->pos - dehomo_real_p);
+
+}
+
 Triangle::Triangle(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3) :
   v1(vertex1), v2(vertex2), v3(vertex3), Shape(false) {}
 
@@ -13,16 +53,10 @@ Triangle::Triangle(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3) :
 bool Triangle::intersect(Ray& ray, float * thit) {
 
   // Transform the ray instead of the object to calculate unique transform intersections
-  vec3 original_ray_dir = ray.dir;
-  vec3 original_ray_pos = ray.pos;
-  if(hasTransform) {
-    mat4 inverse_matrix = inverse(transform);
-    vec4 trans_ray_dir = inverse_matrix * vec4(ray.dir, 0.0);
-    vec4 trans_ray_pos = inverse_matrix * vec4(ray.pos, 1.0);
-    float w = trans_ray_pos.w;
-    ray.dir = glm::normalize(vec3(trans_ray_dir));
-    ray.pos = vec3(trans_ray_pos) / trans_ray_pos.w;
-  }
+  Ray original_ray = Ray();
+  original_ray.pos = ray.pos;
+  original_ray.dir = ray.dir;
+  Shape::transform_ray(&ray);
 
   // Calculate the plane normal
   glm::vec3 vector1, vector2;
@@ -54,34 +88,19 @@ bool Triangle::intersect(Ray& ray, float * thit) {
     // If none of the below are true, the point is outside of the triangle and should return black pixel
     if (beta < 0 || beta > 1 || gamma < 0 || gamma > 1 || beta + gamma > 1) {
       // At this point, calculations are done. Restore to original ray.
-      ray.dir = original_ray_dir;
-      ray.pos = original_ray_pos;
+      Shape::restore_ray(&ray, &original_ray);
       return false;
     }
 
-    // Because transformations are done in local object coordinates, the value
-    // of thit is technically wrong. If a transform is done, whatever t is
-    // needs to be retransformed back by transforming p, then getting the
-    // distance between the original ray and p.
-    vec3 p = ray.pos + t * ray.dir;
-    vec4 real_p = transform * vec4(p, 1.0);
-    float w = real_p.w;
-    vec3 dehomo_real_p = vec3(real_p.x / w, real_p.y / w, real_p.z / w);
-
-    (*thit) = glm::length(original_ray_pos - dehomo_real_p);
-
-    // At this point, calculations are done. Restore to original ray.
-    ray.dir = original_ray_dir;
-    ray.pos = original_ray_pos;
+    Shape::local_to_world_t(thit, &ray, &original_ray, t);
+    Shape::restore_ray(&ray, &original_ray);
 
     return true;
 
   }
 
   // At this point, calculations are done. Restore to original ray.
-  ray.dir = original_ray_dir;
-  ray.pos = original_ray_pos;
-
+  Shape::restore_ray(&ray, &original_ray);
   return false;
 
 }
@@ -92,16 +111,10 @@ bool Sphere::intersect(Ray & ray, float * thit) {
 
   // Transform the ray instead of the object to calculate unique transform
   // intersections. Make sure to save the original ray to restore afterwards
-  vec3 original_ray_dir = ray.dir;
-  vec3 original_ray_pos = ray.pos;
-  if(hasTransform) {
-    mat4 inverse_matrix = inverse(transform);
-    vec4 trans_ray_dir = inverse_matrix * vec4(ray.dir, 0.0);
-    vec4 trans_ray_pos = inverse_matrix * vec4(ray.pos, 1.0);
-    float w = trans_ray_pos.w;
-    ray.dir = glm::normalize(vec3(trans_ray_dir.x, trans_ray_dir.y, trans_ray_dir.z));
-    ray.pos = vec3(trans_ray_pos.x / w, trans_ray_pos.y / w, trans_ray_pos.z / w);
-  }
+  Ray original_ray = Ray();
+  original_ray.pos = ray.pos;
+  original_ray.dir = ray.dir;
+  Shape::transform_ray(&ray);
 
   glm::vec3 dir = ray.dir;
   glm::vec3 eye = ray.pos;
@@ -122,41 +135,24 @@ bool Sphere::intersect(Ray & ray, float * thit) {
     // smaller t value, because it means it's the one that's closer to the camera.
     // However, make sure the t value isn't negative
     else if (t1 < 0 && t2 < 0) {
-      // At this point, calculations are done. Restore to original ray.
-      ray.dir = original_ray_dir;
-      ray.pos = original_ray_pos;
+      Shape::restore_ray(&ray, &original_ray);
       return false;
     }
     else if(t1 < 0) (*thit) = t2;
     else if(t2 < 0) (*thit) = t1;
     else {
-      // TODO: Maybe this is failing?
       float closer = t1 < t2 ? t1 : t2;
       (*thit) = closer;
     }
 
-    // Because transformations are done in local object coordinates, the value
-    // of thit is technically wrong. If a transform is done, whatever t is
-    // needs to be retransformed back by transforming p, then getting the
-    // distance between the original ray and p.
-    vec3 p = eye + (*thit) * dir;
-    vec4 real_p = transform * vec4(p, 1.0);
-    float w = real_p.w;
-    vec3 dehomo_real_p = vec3(real_p.x / w, real_p.y / w, real_p.z / w);
-
-    (*thit) = glm::length(original_ray_pos - dehomo_real_p);
-
-    // At this point, calculations are done. Restore to original ray.
-    ray.dir = original_ray_dir;
-    ray.pos = original_ray_pos;
+    Shape::local_to_world_t(thit, &ray, &original_ray, *thit);
+    Shape::restore_ray(&ray, &original_ray);
 
     return true;
 
   }
 
-  // Restore to original ray
-  ray.dir = original_ray_dir;
-  ray.pos = original_ray_pos;
+  Shape::restore_ray(&ray, &original_ray);
 
   // Discriminant is negative; roots are complex, no intersection at all
   return false;

@@ -5,7 +5,6 @@
 #include <glm/glm.hpp>
 
 class Shape {
-
   public:
     glm::mat4 transform;
     bool hasTransform;
@@ -17,6 +16,9 @@ class Shape {
 
     Shape(bool transf);
     virtual bool intersect(Ray& ray, float * thit) { return false;};
+    virtual void transform_ray(Ray * ray);
+    virtual void restore_ray(Ray * ray_to_restore, Ray * original_ray);
+    virtual void local_to_world_t(float * thit, Ray * transf_ray, Ray * orig_ray, float transf_t);
 };
 
 class Triangle : public Shape {
