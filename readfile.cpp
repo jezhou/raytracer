@@ -32,6 +32,9 @@
 #include "Shape.h"
 #include "variables.h"
 #include "readfile.h"
+#include "Transforms.h"
+
+using namespace glm;
 
 
 // You may not need to use the following two functions, but it is provided
@@ -113,7 +116,6 @@ void readfile(const char* filename)
             height = (int) values[1];
           }
         } else if (cmd == "vertex") {
-          // TODO: Not reading in the values right?
           validinput = readvals(s,3,values);
           if(validinput) {
             vertices.push_back(glm::vec3(values[0], values[1], values[2]));
@@ -126,6 +128,8 @@ void readfile(const char* filename)
               vertices.at(values[1]),
               vertices.at(values[2])
             );
+            tri->transform = transfstack.top();
+            tri->hasTransform = true;
             shapes.push_back(tri);
           }
 
@@ -140,18 +144,43 @@ void readfile(const char* filename)
               ),
               values[3]
             );
+            sphere->transform = transfstack.top();
+            sphere->hasTransform = true;
             shapes.push_back(sphere);
           }
 
+        } else if (cmd == "ambient") {
+          cerr << "Skipping ambient" << endl;
+        } else if (cmd == "translate") {
+          validinput = readvals(s, 3, values);
+          if(validinput) {
+            mat4 translate = Transforms::translate(values[0], values[1], values[2]);
+            rightmultiply(translate, transfstack);
+          }
+        } else if (cmd == "rotate") {
+          validinput = readvals(s, 4, values);
+          if(validinput) {
+            mat3 rotate = Transforms::rotate(vec3(values[0], values[1], values[2]), values[3]);
+            rightmultiply(mat4(rotate), transfstack);\
+          }
+        } else if (cmd == "scale") {
+          validinput = readvals(s, 3, values);
+          if(validinput) {
+            mat4 scale = Transforms::scale(values[0], values[1], values[2]);
+            rightmultiply(scale, transfstack);
+          }
+        } else if (cmd == "pushTransform") {
+          transfstack.push(transfstack.top());
+        } else if (cmd == "popTransform") {
+          if (transfstack.size() <= 1) {
+            cerr << "Stack has no elements.  Cannot Pop\n";
+          } else {
+            transfstack.pop();
+          }
         }
-
         else {
-          cerr << "Not processing ";
-          cerr << cmd;
-          cerr << "; skipping for now\n";
+          cerr << "Not processing " << cmd << "; skipping for now" << endl;
         }
-
-
       }
       getline(in, str);
     }

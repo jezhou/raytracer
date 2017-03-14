@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "variables.h"
+#include <iostream>
 
 Scene::Scene() {
   shapes = new std::vector<Shape *>();
@@ -22,6 +23,7 @@ void Scene::render() {
 
   while (sampler.getSample(&sample)) {
     camera.generateRay(sample, &ray);
+    std::cout << sample.y << std::endl;
     raytracer.trace(ray, 5, &color);
     film.commit(sample, color);
   }

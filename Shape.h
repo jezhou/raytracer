@@ -5,7 +5,17 @@
 #include <glm/glm.hpp>
 
 class Shape {
+
   public:
+    glm::mat4 transform;
+    bool hasTransform;
+    float ambient;
+    float diffuse;
+    float shininess;
+    float emission;
+    float specular;
+
+    Shape(bool transf);
     virtual bool intersect(Ray& ray, float * thit) { return false;};
 };
 

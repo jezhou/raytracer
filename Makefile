@@ -15,8 +15,8 @@ endif
 
 all: raytracer
 
-raytracer: camera.o main.o sampler.o shape.o raytracer.o scene.o film.o camera.o readfile.o
-	$(CC) $(CFLAGS) -o raytracer camera.o shape.o raytracer.o scene.o sampler.o film.o readfile.o main.o ${INCFLAGS} ${LDFLAGS}
+raytracer: camera.o main.o sampler.o shape.o raytracer.o scene.o film.o camera.o transforms.o readfile.o
+	$(CC) $(CFLAGS) -o raytracer camera.o shape.o raytracer.o scene.o sampler.o film.o transforms.o readfile.o main.o ${INCFLAGS} ${LDFLAGS}
 
 main.o: main.cpp Scene.h Film.h Sampler.h LocalGeo.h Ray.h Shape.h variables.h
 	$(CC) $(CFLAGS) $(INCFLAGS) -c main.cpp
@@ -41,6 +41,10 @@ raytracer.o: Raytracer.cpp Raytracer.h
 
 readfile.o: readfile.cpp readfile.h
 	$(CC) $(CFLAGS) $(INCFLAGS) -c readfile.cpp
+
+transforms.o: Transforms.cpp Transforms.h
+	$(CC) $(CFLAGS) $(INCFLAGS) -c Transforms.cpp
+
 
 clean:
 	rm *.o raytracer *.png
