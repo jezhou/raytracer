@@ -2,17 +2,7 @@
 #include "variables.h"
 #include <iostream>
 
-Scene::Scene() {
-  shapes = new std::vector<Shape *>();
-}
-
-void Scene::addShape(Shape * shape) {
-  shapes->push_back(shape);
-}
-
-std::vector<Shape *> * Scene::getShapes() {
-  return shapes;
-}
+using namespace std;
 
 void Scene::render() {
 
@@ -21,12 +11,16 @@ void Scene::render() {
   RGBQUAD color;
   Film film;
 
+  cout << fixed;
+  cout.precision(2);
+
   while (sampler.getSample(&sample)) {
     camera.generateRay(sample, &ray);
-    std::cout << sample.y << std::endl;
     raytracer.trace(ray, 5, &color);
     film.commit(sample, color);
+    cout << (sample.y / width * 100) << "% of Pixels Traced..." << "\r";
   }
 
+  cout << "Done!" << endl;
   film.writeImage();
 }
