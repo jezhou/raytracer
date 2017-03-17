@@ -16,10 +16,10 @@ camera -4 0 1 0 0 1 0 0 1 45
 # you may want to use dummy (constant) shading, ignoring these lines
 
 ambient .1 .1 .1
-directional 0 0 1 .5 .5 .5 
-point 4 0 4 .5 .5 .5
-diffuse 1 0 0 
-specular 0 0 0
+# directional 0 0 1 .5 .5 .5 
+# point 4 0 4 .5 .5 .5
+# diffuse 1 0 0 
+# specular 0 0 0
 
 # Now specify the geometry 
 # Again, for initial testing, maybe you want to implement a dummy 

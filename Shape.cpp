@@ -14,7 +14,6 @@ void Shape::transform_ray(Ray * ray) {
     mat4 inverse_matrix = inverse(transform);
     vec4 trans_ray_dir = inverse_matrix * vec4(ray->dir, 0.0);
     vec4 trans_ray_pos = inverse_matrix * vec4(ray->pos, 1.0);
-    float w = trans_ray_pos.w;
     ray->dir = glm::normalize(vec3(trans_ray_dir));
     ray->pos = vec3(trans_ray_pos) / trans_ray_pos.w;
   }
@@ -29,6 +28,7 @@ void Shape::restore_ray(Ray * ray_to_restore, Ray * orig_ray) {
   ray_to_restore->dir = orig_ray->dir;
   ray_to_restore->pos = orig_ray->pos;
 }
+
 
 void Shape::local_to_world_t(float * thit, Ray * transf_ray, Ray * orig_ray, float transf_t) {
 
@@ -45,12 +45,20 @@ void Shape::local_to_world_t(float * thit, Ray * transf_ray, Ray * orig_ray, flo
 
 }
 
+void Shape::local_to_world_normal(glm::vec3 * world_normal, glm::vec3 normal) {
+  (*world_normal) = glm::normalize(glm::vec3(glm::transpose(transform) * vec4(normal, 0.0)));
+}
+
+glm::vec3 Shape::getFragColor() {
+  return ambient + emission;
+}
+
 Triangle::Triangle(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3) :
   v1(vertex1), v2(vertex2), v3(vertex3), Shape(false) {}
 
 // Basically, see if the ray intersects with the plane first.
 // If it does, check if it's between the triangle bounds.
-bool Triangle::intersect(Ray& ray, float * thit) {
+bool Triangle::intersect(Ray& ray, float * thit, Intersection * in) {
 
   // Transform the ray instead of the object to calculate unique transform intersections
   Ray original_ray = Ray();
@@ -62,7 +70,11 @@ bool Triangle::intersect(Ray& ray, float * thit) {
   glm::vec3 vector1, vector2;
   vector1 = glm::vec3(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z);
   vector2 = glm::vec3(v3.x - v1.x, v3.y - v1.y, v3.z - v1.z);
-  glm::vec3 normal = glm::normalize(glm::cross(vector2, vector1));
+  glm::vec3 normal = glm::normalize(glm::cross(vector1, vector2));
+
+  if (hasTransform) {
+    normal = normalize(mat3(transpose(inverse(transform))) * normal);
+  }
 
   // calculate t, the magnitude of how far the ray should go to get the point on the plane
   float t = glm::dot(v1 - ray.pos, normal) / glm::dot(ray.dir, normal);
@@ -95,6 +107,9 @@ bool Triangle::intersect(Ray& ray, float * thit) {
     Shape::local_to_world_t(thit, &ray, &original_ray, t);
     Shape::restore_ray(&ray, &original_ray);
 
+    in->pos = ray.pos + (*thit) * ray.dir;
+    in->normal = vec3(normal);
+
     return true;
 
   }
@@ -107,7 +122,7 @@ bool Triangle::intersect(Ray& ray, float * thit) {
 
 Sphere::Sphere(glm::vec3 c, float r) : center(c), radius(r), Shape(false) {}
 
-bool Sphere::intersect(Ray & ray, float * thit) {
+bool Sphere::intersect(Ray & ray, float * thit, Intersection * in) {
 
   // Transform the ray instead of the object to calculate unique transform
   // intersections. Make sure to save the original ray to restore afterwards
@@ -145,8 +160,19 @@ bool Sphere::intersect(Ray & ray, float * thit) {
       (*thit) = closer;
     }
 
+    //Calculate the normal in normal coordinates
+    vec3 temp = ray.pos + (*thit) * ray.dir;
+    vec3 normal = glm::normalize(temp - center);
+    if (hasTransform) {
+      normal = normalize(mat3(transpose(inverse(transform))) * normal);
+    }
+
     Shape::local_to_world_t(thit, &ray, &original_ray, *thit);
     Shape::restore_ray(&ray, &original_ray);
+
+    // Calculate the original p coordinate
+    in->pos = ray.pos + (*thit) * ray.dir;
+    in->normal = normal;
 
     return true;
 

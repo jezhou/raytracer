@@ -19,8 +19,8 @@ void Scene::render() {
     raytracer.trace(ray, 5, &color);
     film.commit(sample, color);
     cout << (sample.y / width * 100) << "% of Pixels Traced..." << "\r";
+    cout.flush();
   }
 
-  cout << "Done!" << endl;
   film.writeImage();
 }

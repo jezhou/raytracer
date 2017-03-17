@@ -1,10 +1,9 @@
-#ifndef LOCALGEO_H
-#define LOCALGEO_H
+#ifndef INTERSECTION_H
+#define INTERSECTION_H
 
 #include <glm/glm.hpp>
-#include "Ray.h"
 
-class LocalGeo {
+class Intersection {
 public:
   glm::vec3 pos;
   glm::vec3 normal;

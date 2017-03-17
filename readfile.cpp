@@ -71,6 +71,11 @@ bool readvals(stringstream &s, const int numvals, float* values)
 
 void readfile(const char* filename)
 {
+  ambient = vec3();
+  ambient.r = 0.2 * 255;
+  ambient.g = 0.2 * 255;
+  ambient.b = 0.2 * 255;
+  attenuation = vec3(1, 0, 0);
   string str, cmd;
   ifstream in;
   in.open(filename);
@@ -84,6 +89,8 @@ void readfile(const char* filename)
     stack <mat4> transfstack;
     transfstack.push(mat4(1.0));  // identity
 
+    cerr << "Reading file... " << endl;
+
     getline (in, str);
     while (in) {
       if ((str.find_first_not_of(" \t\r\n") != string::npos) && (str[0] != '#')) {
@@ -92,11 +99,6 @@ void readfile(const char* filename)
         s >> cmd;
         bool validinput;
         float values[10];
-
-
-        cerr << "reading in ";
-        cerr << cmd;
-        cerr << "\n";
 
         // Ruled out comment and blank lines
         if(cmd == "camera") {
@@ -128,6 +130,11 @@ void readfile(const char* filename)
               vertices.at(values[1]),
               vertices.at(values[2])
             );
+            tri->ambient = vec3(ambient);
+            tri->emission = vec3(emission);
+            tri->diffuse = vec3(diffuse);
+            tri->specular = vec3(specular);
+            tri->shininess = shininess;
             tri->transform = transfstack.top();
             tri->hasTransform = true;
             shapes.push_back(tri);
@@ -144,13 +151,70 @@ void readfile(const char* filename)
               ),
               values[3]
             );
+            sphere->ambient = vec3(ambient);
+            sphere->emission = vec3(emission);
+            sphere->diffuse = vec3(diffuse);
+            sphere->specular = vec3(specular);
+            sphere->shininess = shininess;
             sphere->transform = transfstack.top();
             sphere->hasTransform = true;
             shapes.push_back(sphere);
           }
 
+        } else if (cmd == "attenuation") {
+          if(readvals(s, 3, values)) {
+            attenuation.x = values[0];
+            attenuation.y = values[1];
+            attenuation.z = values[2];
+          }
         } else if (cmd == "ambient") {
-          cerr << "Skipping ambient" << endl;
+          if(readvals(s, 3, values)) {
+            ambient.r = values[0];
+            ambient.g = values[1];
+            ambient.b = values[2];
+          }
+        } else if (cmd == "emission") {
+          if(readvals(s, 3, values)) {
+            emission.r = values[0];
+            emission.g = values[1];
+            emission.b = values[2];
+          }
+        } else if (cmd == "diffuse"){
+          if(readvals(s, 3, values)) {
+            diffuse.r = values[0];
+            diffuse.g = values[1];
+            diffuse.b = values[2];
+          }
+        } else if (cmd == "specular") {
+          if(readvals(s, 3, values)) {
+            specular.r = values[0];
+            specular.g = values[1];
+            specular.b = values[2];
+          }
+        } else if (cmd == "shininess") {
+          if(readvals(s, 1, values)) {
+            shininess = values[0];
+          }
+        } else if (cmd =="point") {
+
+          if(readvals(s, 6, values)) {
+            Light * pl = new Light(values[0], values[1], values[2], 1.0,
+              values[3], values[4], values[5]);
+            pl->attenuation_terms = attenuation;
+            lights.push_back(pl);
+          }
+
+        } else if (cmd == "directional") {
+
+          if(readvals(s, 6, values)) {
+            Light * dl = new Light(values[0], values[1], values[2], 0.0,
+              values[3], values[4], values[5]);
+
+            // This makes it so that there is NO attenuation
+            dl->attenuation_terms = vec3(1, 0, 0);
+            lights.push_back(dl);
+          }
+
         } else if (cmd == "translate") {
           validinput = readvals(s, 3, values);
           if(validinput) {
@@ -184,6 +248,9 @@ void readfile(const char* filename)
       }
       getline(in, str);
     }
+
+    cout << "Finished." << endl;
+
   } else {
     cerr << "Unable to Open Input Data File " << filename << "\n";
     throw 2;

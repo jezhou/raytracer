@@ -23,7 +23,7 @@ void Film::writeImage() {
   std::strcpy(result, outputfilename);
   std::strcat(result, ".png");
 
-  cout << "saving to " << result << endl;
+  cout << "Done! Saving to " << result << endl;
   FreeImage_Save(FIF_PNG, bitmap, result, 0);
 
 }
