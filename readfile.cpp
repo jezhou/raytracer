@@ -82,7 +82,7 @@ void readfile(const char* filename)
   if (in.is_open()) {
 
     cout << "Reading in file " << filename << endl;
-    outputfilename = filename;
+    outputfilename = string(filename) + ".png";
 
     // I need to implement a matrix stack to store transforms.
     // This is done using standard STL Templates
@@ -100,8 +100,16 @@ void readfile(const char* filename)
         bool validinput;
         float values[10];
 
-        // Ruled out comment and blank lines
-        if(cmd == "camera") {
+        if (cmd == "output") {
+          string outfile;
+          s >> outfile;
+          if (s.fail()) {
+            cout << "Output file name invalid. Leave the command blank as an alternative" << endl;
+            break;
+          }
+          outputfilename = outfile;
+        }
+        else if(cmd == "camera") {
           validinput = readvals(s, 10, values);
           if(validinput) {
             camera = Camera(
@@ -249,7 +257,7 @@ void readfile(const char* filename)
       getline(in, str);
     }
 
-    cout << "Finished." << endl;
+    cout << "Finished reading in scene file. Beginning ray tracing..." << endl;
 
   } else {
     cerr << "Unable to Open Input Data File " << filename << "\n";

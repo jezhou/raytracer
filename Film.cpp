@@ -18,12 +18,7 @@ void Film::commit(Sample& sample, RGBQUAD& color) {
 
 void Film::writeImage() {
 
-  char result[100];
-
-  std::strcpy(result, outputfilename);
-  std::strcat(result, ".png");
-
-  cout << "Done! Saving to " << result << endl;
-  FreeImage_Save(FIF_PNG, bitmap, result, 0);
+  FreeImage_Save(FIF_PNG, bitmap, outputfilename.c_str(), 0);
+  cout << "Done writing image! Saving to " << outputfilename << endl;
 
 }

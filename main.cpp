@@ -28,7 +28,12 @@ int main(int argc, char* argv[]) {
   FreeImage_Initialise();
   init();
   readfile(argv[1]);
+
+  // Acceleration structure
+
+
   scene = Scene();
   scene.render();
+
   FreeImage_DeInitialise();
 }

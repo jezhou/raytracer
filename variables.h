@@ -25,7 +25,7 @@ EXTERN int bits_per_pixel;
 EXTERN Camera camera;
 EXTERN Ray ray;
 EXTERN Raytracer raytracer;
-EXTERN const char * outputfilename;
+EXTERN std::string outputfilename;
 
 EXTERN std::vector<glm::vec3> vertices;
 EXTERN std::vector<Shape*> shapes;

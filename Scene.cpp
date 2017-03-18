@@ -24,9 +24,12 @@ void Scene::render() {
     color.rgbBlue = 255 * retlight.r;
 
     film.commit(sample, color);
-    cout << (sample.y / width * 100) << "% of Pixels Traced..." << "\r";
+    cout << (sample.y / height * 100) << "% of Pixels Traced..." << "\r";
     cout.flush();
   }
+
+  //Purely for aesthetic reasons
+  cout << "100% of Pixels Traced! Proceeding to write image..." << endl;
 
   film.writeImage();
 }
