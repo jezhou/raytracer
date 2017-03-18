@@ -103,10 +103,10 @@ glm::vec3 Raytracer::compute_light(Intersection * in, Shape * closestObject, Ray
       );
 
     float nDotL = dot(in->normal, light_direction);
-    vec3 lambert = closestObject->diffuse * lightcolor * std::max(nDotL, (float)0.0);
+    vec3 lambert = closestObject->diffuse * lightcolor * std::max(nDotL, 0.0f);
 
     float nDotH = dot(in->normal, halfvector);
-    vec3 phong = closestObject->specular * lightcolor * std::pow(std::max(nDotH, (float)0.0), closestObject->shininess);
+    vec3 phong = closestObject->specular * lightcolor * std::pow(std::max(nDotH, 0.0f), closestObject->shininess);
 
     finalcolor += (lambert + phong);
   }

@@ -14,23 +14,21 @@ shininess 40
 emission 0 0 0
 
 pushTransform
-translate -10 0 0
+translate 0 -2 -5 
+
+pushTransform
+translate 0 0 0 
 sphere 0 0 0 0.4
 popTransform
+
 pushTransform
-translate -10 0 -1
-sphere 0 0 0 0.4
+translate 0 0 0 
+sphere 1 0 0 0.4
 popTransform
+
 pushTransform
-translate -10 0 -2
-sphere 0 0 0 0.4
+translate 0 0 0 
+sphere -1 0 0 0.4
 popTransform
-pushTransform
-translate -10 0 -3
-sphere 0 0 0 0.4
-popTransform
-pushTransform
-translate -10 0 -38
-sphere 0 0 0 0.4
 
 popTransform
