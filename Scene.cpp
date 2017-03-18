@@ -10,13 +10,19 @@ void Scene::render() {
   Sample sample;
   RGBQUAD color;
   Film film;
+  glm::vec3 retlight;
 
   cout << fixed;
   cout.precision(2);
 
   while (sampler.getSample(&sample)) {
     camera.generateRay(sample, &ray);
-    raytracer.trace(ray, 5, &color);
+    raytracer.trace(&ray, 5, &retlight);
+
+    color.rgbGreen = 255 * retlight.g;
+    color.rgbRed = 255 * retlight.b;
+    color.rgbBlue = 255 * retlight.r;
+
     film.commit(sample, color);
     cout << (sample.y / width * 100) << "% of Pixels Traced..." << "\r";
     cout.flush();

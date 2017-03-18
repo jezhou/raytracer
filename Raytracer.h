@@ -15,8 +15,8 @@ class Scene;
 class Raytracer {
 
   public:
-    void trace(Ray& ray, int depth, RGBQUAD * color);
-    glm::vec3 compute_light(Intersection * in, Shape * closestObject, Ray * ray);
+    void trace(Ray * ray, int depth, glm::vec3 * retlight);
+    glm::vec3 compute_light(Intersection * in, Shape * closestObject, Ray * ray, int depth);
 };
 
 #endif

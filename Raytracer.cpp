@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cmath>
 
-void Raytracer::trace(Ray& ray, int depth, RGBQUAD * color) {
+void  Raytracer::trace(Ray * ray, int depth, glm::vec3 * retlight) {
 
   float thit;
   float smallest_thit = FLT_MAX;
@@ -18,10 +18,9 @@ void Raytracer::trace(Ray& ray, int depth, RGBQUAD * color) {
 
   bool hit = false;
   for(; it != end; it++) {
-    if (depth > 5) {
-      color->rgbRed = 0;
-      color->rgbGreen = 0;
-      color->rgbBlue = 0;
+    if (!depth) {
+      (*retlight) = vec3(0, 0, 0);
+      return;
     }
 
     hit = (*it)->intersect(ray, &thit, &in);
@@ -33,23 +32,16 @@ void Raytracer::trace(Ray& ray, int depth, RGBQUAD * color) {
 
   }
 
-  // TODO: return proper shading in the future
-  //       right now this will just color in whatever green
-
+  glm::vec3 finallight = vec3(0, 0, 0);
   if(closestObject) {
-    glm::vec3 finallight = compute_light(&closest_in, closestObject, &ray);
-    color->rgbGreen = 255 * finallight.g;
-    color->rgbRed = 255 * finallight.b;
-    color->rgbBlue = 255 * finallight.r;
-  } else {
-    color->rgbGreen = 0;
-    color->rgbRed = 0;
-    color->rgbBlue = 0;
+    finallight = compute_light(&closest_in, closestObject, ray, depth);
   }
+
+  (*retlight) = vec3(finallight);
 
 }
 
-glm::vec3 Raytracer::compute_light(Intersection * in, Shape * closestObject, Ray * ray) {
+glm::vec3 Raytracer::compute_light(Intersection * in, Shape * closestObject, Ray * ray, int depth) {
 
   std::vector<Light*>::iterator lit = lights.begin();
   std::vector<Light*>::iterator end = lights.end();
@@ -76,14 +68,24 @@ glm::vec3 Raytracer::compute_light(Intersection * in, Shape * closestObject, Ray
     Ray shadow_ray;
     shadow_ray.pos = in->pos + (float)0.0001 * light_direction;
     shadow_ray.dir = light_direction;
+
     float thit;
     Intersection dummy;
+
     for(; it != end; it++) {
-      hit = (*it)->intersect(shadow_ray, &thit, &dummy);
+      hit = (*it)->intersect(&shadow_ray, &thit, &dummy);
       if(hit) break;
     }
     if(hit) {
-      continue; // visibility is 0; skip
+      // Compute reflectiveness using recursive ray tracing. If the specular is
+      // 0, this acts as the visibility component.
+      // Ray reflect_ray;
+      // reflect_ray.dir = -ray->dir - (2.0f * in->normal * dot(-ray->dir, in->normal));
+      // reflect_ray.pos = in->pos;
+      // vec3 retlight = vec3(0, 0, 0);
+      // trace(&reflect_ray, depth -1, &retlight);
+      // finalcolor += retlight;
+      continue;
     }
 
     // Vector between light direction and eyevector, which is the ray direction
@@ -105,7 +107,7 @@ glm::vec3 Raytracer::compute_light(Intersection * in, Shape * closestObject, Ray
     float nDotH = dot(in->normal, halfvector);
     vec3 phong = closestObject->specular * lightcolor * std::pow(std::max(nDotH, (float)0.0), closestObject->shininess);
 
-    // float reflective_recursion = 
+    // float reflective_recursion =
 
     finalcolor += (lambert + phong);
   }

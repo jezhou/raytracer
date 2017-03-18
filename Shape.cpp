@@ -58,13 +58,13 @@ Triangle::Triangle(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3) :
 
 // Basically, see if the ray intersects with the plane first.
 // If it does, check if it's between the triangle bounds.
-bool Triangle::intersect(Ray& ray, float * thit, Intersection * in) {
+bool Triangle::intersect(Ray* ray, float * thit, Intersection * in) {
 
   // Transform the ray instead of the object to calculate unique transform intersections
   Ray original_ray = Ray();
-  original_ray.pos = ray.pos;
-  original_ray.dir = ray.dir;
-  Shape::transform_ray(&ray);
+  original_ray.pos = ray->pos;
+  original_ray.dir = ray->dir;
+  Shape::transform_ray(ray);
 
   // Calculate the plane normal
   glm::vec3 vector1, vector2;
@@ -77,7 +77,7 @@ bool Triangle::intersect(Ray& ray, float * thit, Intersection * in) {
   }
 
   // calculate t, the magnitude of how far the ray should go to get the point on the plane
-  float t = glm::dot(v1 - ray.pos, normal) / glm::dot(ray.dir, normal);
+  float t = glm::dot(v1 - ray->pos, normal) / glm::dot(ray->dir, normal);
 
   // if t >= 0, t is going in the right direction
   if (t >= 0) {
@@ -87,27 +87,27 @@ bool Triangle::intersect(Ray& ray, float * thit, Intersection * in) {
     // See page 78 of the shirley textbook
     float A = glm::determinant(glm::mat3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z,
                                  v1.x - v3.x, v1.y - v3.y, v1.z - v3.z,
-                                 ray.dir.x, ray.dir.y, ray.dir.z));
+                                 ray->dir.x, ray->dir.y, ray->dir.z));
 
-    float beta = glm::determinant(glm::mat3(v1.x - ray.pos.x, v1.y - ray.pos.y, v1.z - ray.pos.z,
+    float beta = glm::determinant(glm::mat3(v1.x - ray->pos.x, v1.y - ray->pos.y, v1.z - ray->pos.z,
                            v1.x - v3.x, v1.y - v3.y, v1.z - v3.z,
-                           ray.dir.x, ray.dir.y, ray.dir.z)) / A;
+                           ray->dir.x, ray->dir.y, ray->dir.z)) / A;
 
     float gamma = glm::determinant(glm::mat3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z,
-                          v1.x - ray.pos.x, v1.y - ray.pos.y, v1.z - ray.pos.z,
-                          ray.dir.x, ray.dir.y, ray.dir.z)) / A;
+                          v1.x - ray->pos.x, v1.y - ray->pos.y, v1.z - ray->pos.z,
+                          ray->dir.x, ray->dir.y, ray->dir.z)) / A;
 
     // If none of the below are true, the point is outside of the triangle and should return black pixel
     if (beta < 0 || beta > 1 || gamma < 0 || gamma > 1 || beta + gamma > 1) {
       // At this point, calculations are done. Restore to original ray.
-      Shape::restore_ray(&ray, &original_ray);
+      Shape::restore_ray(ray, &original_ray);
       return false;
     }
 
-    Shape::local_to_world_t(thit, &ray, &original_ray, t);
-    Shape::restore_ray(&ray, &original_ray);
+    Shape::local_to_world_t(thit, ray, &original_ray, t);
+    Shape::restore_ray(ray, &original_ray);
 
-    in->pos = ray.pos + (*thit) * ray.dir;
+    in->pos = ray->pos + (*thit) * ray->dir;
     in->normal = vec3(normal);
 
     return true;
@@ -115,24 +115,24 @@ bool Triangle::intersect(Ray& ray, float * thit, Intersection * in) {
   }
 
   // At this point, calculations are done. Restore to original ray.
-  Shape::restore_ray(&ray, &original_ray);
+  Shape::restore_ray(ray, &original_ray);
   return false;
 
 }
 
 Sphere::Sphere(glm::vec3 c, float r) : center(c), radius(r), Shape(false) {}
 
-bool Sphere::intersect(Ray & ray, float * thit, Intersection * in) {
+bool Sphere::intersect(Ray * ray, float * thit, Intersection * in) {
 
   // Transform the ray instead of the object to calculate unique transform
   // intersections. Make sure to save the original ray to restore afterwards
   Ray original_ray = Ray();
-  original_ray.pos = ray.pos;
-  original_ray.dir = ray.dir;
-  Shape::transform_ray(&ray);
+  original_ray.pos = ray->pos;
+  original_ray.dir = ray->dir;
+  Shape::transform_ray(ray);
 
-  glm::vec3 dir = ray.dir;
-  glm::vec3 eye = ray.pos;
+  glm::vec3 dir = ray->dir;
+  glm::vec3 eye = ray->pos;
 
   float dis = pow(dot(dir, eye - center), 2) - dot(dir, dir) * (dot(eye-center, eye-center) - pow(radius, 2));
 
@@ -150,7 +150,7 @@ bool Sphere::intersect(Ray & ray, float * thit, Intersection * in) {
     // smaller t value, because it means it's the one that's closer to the camera.
     // However, make sure the t value isn't negative
     else if (t1 < 0 && t2 < 0) {
-      Shape::restore_ray(&ray, &original_ray);
+      Shape::restore_ray(ray, &original_ray);
       return false;
     }
     else if(t1 < 0) (*thit) = t2;
@@ -161,24 +161,24 @@ bool Sphere::intersect(Ray & ray, float * thit, Intersection * in) {
     }
 
     //Calculate the normal in normal coordinates
-    vec3 temp = ray.pos + (*thit) * ray.dir;
+    vec3 temp = ray->pos + (*thit) * ray->dir;
     vec3 normal = glm::normalize(temp - center);
     if (hasTransform) {
       normal = normalize(mat3(transpose(inverse(transform))) * normal);
     }
 
-    Shape::local_to_world_t(thit, &ray, &original_ray, *thit);
-    Shape::restore_ray(&ray, &original_ray);
+    Shape::local_to_world_t(thit, ray, &original_ray, *thit);
+    Shape::restore_ray(ray, &original_ray);
 
     // Calculate the original p coordinate
-    in->pos = ray.pos + (*thit) * ray.dir;
+    in->pos = ray->pos + (*thit) * ray->dir;
     in->normal = normal;
 
     return true;
 
   }
 
-  Shape::restore_ray(&ray, &original_ray);
+  Shape::restore_ray(ray, &original_ray);
 
   // Discriminant is negative; roots are complex, no intersection at all
   return false;
