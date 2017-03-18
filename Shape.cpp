@@ -72,8 +72,9 @@ bool Triangle::intersect(Ray* ray, float * thit, Intersection * in) {
   vector2 = glm::vec3(v3.x - v1.x, v3.y - v1.y, v3.z - v1.z);
   glm::vec3 normal = glm::normalize(glm::cross(vector1, vector2));
 
+  glm::vec3 transform_normal = normal;
   if (hasTransform) {
-    normal = normalize(mat3(transpose(inverse(transform))) * normal);
+    transform_normal = normalize(mat3(transpose(inverse(transform))) * normal);
   }
 
   // calculate t, the magnitude of how far the ray should go to get the point on the plane
@@ -108,7 +109,7 @@ bool Triangle::intersect(Ray* ray, float * thit, Intersection * in) {
     Shape::restore_ray(ray, &original_ray);
 
     in->pos = ray->pos + (*thit) * ray->dir;
-    in->normal = vec3(normal);
+    in->normal = vec3(transform_normal);
 
     return true;
 

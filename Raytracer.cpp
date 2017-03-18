@@ -66,26 +66,27 @@ glm::vec3 Raytracer::compute_light(Intersection * in, Shape * closestObject, Ray
 
     bool hit = false;
     Ray shadow_ray;
-    shadow_ray.pos = in->pos + (float)0.0001 * light_direction;
+    shadow_ray.pos = in->pos + 0.001f * light_direction;
     shadow_ray.dir = light_direction;
 
     float thit;
     Intersection dummy;
+    float visibility = 1.0f;
 
     for(; it != end; it++) {
       hit = (*it)->intersect(&shadow_ray, &thit, &dummy);
-      if(hit) break;
-    }
-    if(hit) {
-      // Compute reflectiveness using recursive ray tracing. If the specular is
-      // 0, this acts as the visibility component.
-      // Ray reflect_ray;
-      // reflect_ray.dir = -ray->dir - (2.0f * in->normal * dot(-ray->dir, in->normal));
-      // reflect_ray.pos = in->pos;
-      // vec3 retlight = vec3(0, 0, 0);
-      // trace(&reflect_ray, depth -1, &retlight);
-      // finalcolor += retlight;
-      continue;
+
+      // basically, don't go beyond the point light if there's an intersection
+      if(hit && working->props.w == 1 && length(position - shadow_ray.pos) < thit) {
+        hit = false;
+        continue;
+      }
+
+      // Handle every other shadow ray the same
+      else if(hit) {
+        visibility = 0.0f;
+        break;
+      }
     }
 
     // Vector between light direction and eyevector, which is the ray direction
@@ -93,8 +94,8 @@ glm::vec3 Raytracer::compute_light(Intersection * in, Shape * closestObject, Ray
 
     // Take into account attenuation. Direction lights will only have first attenuation
     // term applied
-    float distance = glm::length(position - ray->pos); // TODO: This might not be right?
-    vec3 lightcolor = working->color /
+    float distance = glm::length(position - in->pos);
+    vec3 lightcolor = visibility * working->color /
       (float)(
         working->attenuation_terms.x +
         (working->attenuation_terms.y * distance) +
@@ -107,10 +108,21 @@ glm::vec3 Raytracer::compute_light(Intersection * in, Shape * closestObject, Ray
     float nDotH = dot(in->normal, halfvector);
     vec3 phong = closestObject->specular * lightcolor * std::pow(std::max(nDotH, (float)0.0), closestObject->shininess);
 
-    // float reflective_recursion =
-
     finalcolor += (lambert + phong);
   }
+
+  // Reflectiveness using recursive raytracing.
+  // Avoids unneceessary recursion if specular component is all 0's
+  vec3 reflective_recursion = vec3(0, 0, 0);
+  if(any(greaterThan(closestObject->specular, vec3(0, 0, 0)))) {
+    Ray reflect_ray;
+    reflect_ray.dir = ray->dir - (2.0f * in->normal * dot(ray->dir, in->normal));
+    reflect_ray.pos = in->pos + 0.001f * reflect_ray.dir;
+    trace(&reflect_ray, depth - 1, &reflective_recursion);
+    reflective_recursion = closestObject->specular * reflective_recursion;
+  }
+
+  finalcolor += reflective_recursion;
 
   // Clamping
   if (finalcolor.r > 1) finalcolor.r = 1.0;
