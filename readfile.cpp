@@ -37,18 +37,6 @@
 using namespace glm;
 
 
-// You may not need to use the following two functions, but it is provided
-// here for convenience
-
-// The function below applies the appropriate transform to a 4-vector
-void matransform(stack<mat4> &transfstack, float * values)
-{
-  mat4 transform = transfstack.top();
-  vec4 valvec = vec4(values[0],values[1],values[2],values[3]);
-  vec4 newval = transform * valvec;
-  for (int i = 0; i < 4; i++) values[i] = newval[i];
-}
-
 void rightmultiply(const mat4 & M, stack<mat4> &transfstack)
 {
   mat4 &T = transfstack.top();
@@ -76,6 +64,7 @@ void readfile(const char* filename)
   ambient.g = 0.2 * 255;
   ambient.b = 0.2 * 255;
   attenuation = vec3(1, 0, 0);
+  maxdepth = 5;
   string str, cmd;
   ifstream in;
   in.open(filename);
@@ -91,7 +80,7 @@ void readfile(const char* filename)
 
     cerr << "Reading file... " << endl;
 
-    getline (in, str);
+    getline (in, str);  
     while (in) {
       if ((str.find_first_not_of(" \t\r\n") != string::npos) && (str[0] != '#')) {
 
@@ -108,6 +97,11 @@ void readfile(const char* filename)
             break;
           }
           outputfilename = outfile;
+        }
+        else if(cmd == "maxdepth") {
+          if(readvals(s,1,values)) {
+            maxdepth = (int) values[0];
+          }
         }
         else if(cmd == "camera") {
           validinput = readvals(s, 10, values);

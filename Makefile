@@ -7,6 +7,7 @@ LDFLAGS = -framework GLUT -framework OpenGL -L./lib/mac/ \
 		-lGL -lGLU -lm -lstdc++ -lfreeimage
 else
 CFLAGS = -g -g3 -O0 -DGL_GLEXT_PROTOTYPES
+CFLAGSOPT = -O3 -DGL_GLEXT_PROTOTYPES
 INCFLAGS = -I./glm-0.9.7.1 -I./include/ -I/usr/X11R6/include -I/sw/include \
 		-I/usr/sww/include -I/usr/sww/pkg/Mesa/include
 LDFLAGS = -L/usr/X11R6/lib -L/sw/lib -L/usr/sww/lib -L./lib/nix/ \
@@ -14,6 +15,11 @@ LDFLAGS = -L/usr/X11R6/lib -L/sw/lib -L/usr/sww/lib -L./lib/nix/ \
 endif
 
 all: raytracer
+
+opt: raytraceropt
+
+raytraceropt: camera.o main.o sampler.o shape.o raytracer.o scene.o film.o camera.o transforms.o readfile.o light.o
+	$(CC) $(CFLAGSOPT) -o raytracer camera.o shape.o raytracer.o scene.o sampler.o film.o transforms.o light.o readfile.o main.o ${INCFLAGS} ${LDFLAGS}
 
 raytracer: camera.o main.o sampler.o shape.o raytracer.o scene.o film.o camera.o transforms.o readfile.o light.o
 	$(CC) $(CFLAGS) -o raytracer camera.o shape.o raytracer.o scene.o sampler.o film.o transforms.o light.o readfile.o main.o ${INCFLAGS} ${LDFLAGS}

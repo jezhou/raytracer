@@ -21,6 +21,7 @@ class Raytracer;
 EXTERN int width;
 EXTERN int height;
 EXTERN int bits_per_pixel;
+EXTERN int maxdepth;
 
 EXTERN Camera camera;
 EXTERN Ray ray;

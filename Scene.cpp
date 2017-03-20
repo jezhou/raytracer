@@ -17,7 +17,7 @@ void Scene::render() {
 
   while (sampler.getSample(&sample)) {
     camera.generateRay(sample, &ray);
-    raytracer.trace(&ray, 5, &retlight);
+    raytracer.trace(&ray, maxdepth, &retlight);
 
     color.rgbGreen = 255 * retlight.g;
     color.rgbRed = 255 * retlight.b;
